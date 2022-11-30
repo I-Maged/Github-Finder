@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Spinner from '../layout/assets/Spinner';
 import env from 'react-dotenv';
 
 function UserResults() {
@@ -10,12 +11,11 @@ function UserResults() {
   }, []);
 
   const fetchUsers = async () => {
-    const response = await fetch(`${env.GITHUB_URL}/users`, {
-      headers: { Authorization: `token ${env.GITHUB_TOKEN}` },
-    });
+    const response = await fetch(`${env.GITHUB_URL}/users`);
 
     const data = await response.json();
 
+    console.log(data);
     SetUsers(data);
     setLoading(false);
   };
@@ -24,12 +24,12 @@ function UserResults() {
     return (
       <div className='grid grid-cols-1 gap-8 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2'>
         {users.map((user) => (
-          <div>{user.login}</div>
+          <div key={user.id}>{user.login}</div>
         ))}
       </div>
     );
   } else {
-    return <h3>Loading</h3>;
+    return <Spinner />;
   }
 }
 
