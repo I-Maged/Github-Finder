@@ -1,9 +1,8 @@
 import { createContext, useReducer } from 'react';
 import githubReducer from './GithubReducer';
-import env from 'react-dotenv';
 
 const GithubContext = createContext();
-const GITHUB_URL = env.GITHUB_URL;
+const GITHUB_URL = 'https://api.github.com/search/users';
 
 export const GithubProvider = ({ children }) => {
   const initialState = {
@@ -13,18 +12,20 @@ export const GithubProvider = ({ children }) => {
 
   const [state, dispatch] = useReducer(githubReducer, initialState);
 
-  const fetchUsers = async () => {
+  const searchUsers = async (text) => {
     setLoading();
 
-    const response = await fetch(`${GITHUB_URL}/users`);
+    const response = await fetch(`${GITHUB_URL}?q=${text}`);
 
-    const data = await response.json();
+    const { items } = await response.json();
 
     dispatch({
       type: 'GET_USERS',
-      payload: data,
+      payload: items,
     });
   };
+
+  const clearUsers = () => dispatch({ type: 'CLEAR_USERS' });
 
   const setLoading = () => dispatch({ type: 'SET_LOADING' });
 
@@ -33,7 +34,8 @@ export const GithubProvider = ({ children }) => {
       value={{
         users: state.users,
         loading: state.loading,
-        fetchUsers,
+        searchUsers,
+        clearUsers,
       }}
     >
       {children}
