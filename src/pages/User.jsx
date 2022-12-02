@@ -5,19 +5,32 @@ import { useContext, useEffect } from 'react';
 import GithubContext from '../context/github/GithubContext';
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { getUserRepos, getUser } from '../context/github/GithubActions';
 
 function User() {
-  const { getUser, user, loading, getUserRepos, repos } =
-    useContext(GithubContext);
+  const { user, loading, repos, dispatch } = useContext(GithubContext);
 
   const params = useParams();
 
   useEffect(() => {
-    getUser(params.login);
-    getUserRepos(params.login);
+    dispatch({ type: 'SET_LOADING' });
 
-    // eslint-disable-next-line
-  }, []);
+    const getUserData = async () => {
+      const userData = await getUser(params.login);
+      const userRepos = await getUserRepos(params.login);
+
+      dispatch({
+        type: 'GET_USER',
+        payload: userData,
+      });
+      dispatch({
+        type: 'GET_REPOS',
+        payload: userRepos,
+      });
+    };
+
+    getUserData();
+  }, [dispatch, params.login]);
 
   const {
     name,
