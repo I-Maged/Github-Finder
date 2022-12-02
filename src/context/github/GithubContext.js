@@ -13,6 +13,7 @@ export const GithubProvider = ({ children }) => {
 
   const [state, dispatch] = useReducer(githubReducer, initialState);
 
+  //Fetch All Users
   const searchUsers = async (text) => {
     setLoading();
 
@@ -25,6 +26,8 @@ export const GithubProvider = ({ children }) => {
       payload: items,
     });
   };
+
+  //Get a single user
   const getUser = async (login) => {
     setLoading();
 
