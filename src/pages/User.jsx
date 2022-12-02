@@ -5,7 +5,7 @@ import { useContext, useEffect } from 'react';
 import GithubContext from '../context/github/GithubContext';
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { getUserRepos, getUser } from '../context/github/GithubActions';
+import { getUserAndRepos } from '../context/github/GithubActions';
 
 function User() {
   const { user, loading, repos, dispatch } = useContext(GithubContext);
@@ -16,16 +16,11 @@ function User() {
     dispatch({ type: 'SET_LOADING' });
 
     const getUserData = async () => {
-      const userData = await getUser(params.login);
-      const userRepos = await getUserRepos(params.login);
+      const userData = await getUserAndRepos(params.login);
 
       dispatch({
-        type: 'GET_USER',
+        type: 'GET_USER_AND_REPOS',
         payload: userData,
-      });
-      dispatch({
-        type: 'GET_REPOS',
-        payload: userRepos,
       });
     };
 
@@ -52,6 +47,9 @@ function User() {
   if (loading) {
     return <Spinnner />;
   }
+
+  //check for valid url to users website
+  const websiteUrl = blog?.startsWith('http') ? blog : 'https://' + blog;
 
   return (
     <>
@@ -97,7 +95,7 @@ function User() {
               </div>
             </div>
 
-            <div className='w-full rounded-lg shadow-md bg-base-100 stats'>
+            <div className='grid grid-rows-3 md:grid-rows-1 md:grid-cols-3 w-full rounded-lg shadow-md bg-base-100 stats'>
               {location && (
                 <div className='stat'>
                   <div className='stat-title text-md'>Location</div>
@@ -108,26 +106,12 @@ function User() {
                 <div className='stat'>
                   <div className='stat-title text-md'>Website</div>
                   <div className='text-lg stat-value'>
-                    <a
-                      href={`https://${blog}`}
-                      target='_blank'
-                      rel='noreferrer'
-                    >
+                    <a href={websiteUrl} target='_blank' rel='noreferrer'>
                       Visit Website
                     </a>
                   </div>
                 </div>
               )}
-              {/* {blog && (
-                <div className='stat'>
-                  <div className='stat-title text-md'>Website</div>
-                  <div className='text-lg stat-value'>
-                    <a href={websiteUrl} target='_blank' rel='noreferrer'>
-                      {websiteUrl}
-                    </a>
-                  </div>
-                </div>
-              )} */}
               {twitter_username && (
                 <div className='stat'>
                   <div className='stat-title text-md'>Twitter</div>
