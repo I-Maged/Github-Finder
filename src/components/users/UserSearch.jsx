@@ -14,6 +14,10 @@ function UserSearch() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    dispatch({
+      type: 'CLEAR_USERS',
+    });
+
     if (text === '') {
       setAlert('Please enter a name', 'error');
     } else {
